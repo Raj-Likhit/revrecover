@@ -1,0 +1,351 @@
+================================================================================
+4-MINUTE VIDEO - FINAL CHECKLIST
+================================================================================
+
+Use this 5 minutes before you hit RECORD.
+
+================================================================================
+TECHNICAL SETUP ✓
+================================================================================
+
+COMPUTER:
+  [ ] Close all unnecessary applications
+  [ ] Turn off notifications (Do Not Disturb mode)
+  [ ] Disable auto-updates
+  [ ] Plug in laptop (don't run on battery)
+  [ ] Clear desktop (in case you show it)
+
+BROWSER:
+  [ ] Go to: http://localhost:3000
+  [ ] Hard refresh: Ctrl+Shift+R
+  [ ] Verify you see "🏠 Start Here" tab active
+  [ ] Close all other tabs
+  [ ] Hide bookmarks bar: Ctrl+Shift+B
+  [ ] Zoom level: 100% (Ctrl+0)
+  [ ] Full screen OR maximized window (choose one)
+  [ ] Check console for errors (F12 → Console tab should be clean)
+
+SERVER:
+  [ ] Verify server is running (should be from before)
+  [ ] No errors in terminal
+  [ ] Test: Click "Soft Decline" button to verify it works
+  [ ] Refresh page if needed
+
+SCREEN RECORDING SOFTWARE:
+  [ ] Open OBS / Loom / ScreenFlow
+  [ ] Settings: 1920x1080, 30fps, MP4 format
+  [ ] Source: Display capture OR window capture
+  [ ] Preview looks good (no black bars, correct area captured)
+  [ ] Audio input selected (microphone)
+  [ ] Test recording: 5 seconds, verify audio and video work
+
+MICROPHONE:
+  [ ] External mic plugged in (not laptop mic if possible)
+  [ ] Input level: -12dB to -6dB (not too quiet, not clipping)
+  [ ] Test: Record yourself saying "Testing 1, 2, 3", play back
+  [ ] No background noise (AC, fan, traffic)
+  [ ] Positioned 6-8 inches from mouth
+
+ENVIRONMENT:
+  [ ] Quiet room (no interruptions)
+  [ ] Door closed / sign posted
+  [ ] Phone on silent (or in another room)
+  [ ] Pets/family informed (no interruptions)
+  [ ] Natural light OR consistent lighting (no flickering)
+
+SCRIPT:
+  [ ] VIDEO_SCRIPT_4MIN.md open on second screen OR printed
+  [ ] VIDEO_QUICK_REFERENCE.txt available for glancing
+  [ ] Key numbers memorized: ₹445,555, 55%, 32%, 0.17, 0.25
+
+PRACTICE:
+  [ ] Dry run completed (timing verified ~4:00)
+  [ ] Know where to click (soft, hard, batch results)
+  [ ] Know key emphasis words
+  [ ] Water nearby (clear throat before starting)
+
+================================================================================
+RECORDING SEQUENCE ✓
+================================================================================
+
+BEFORE YOU START:
+  [ ] Take 3 deep breaths (calm nerves)
+  [ ] Clear throat, sip water
+  [ ] Position hands on keyboard/mouse
+  [ ] Start with browser showing Start Here page
+  [ ] Cursor in neutral position (center of screen)
+
+RECORDING:
+  [ ] Hit RECORD button
+  [ ] Wait 3 seconds (buffer)
+  [ ] Start speaking at 0:00 mark
+  [ ] Follow script timing
+  [ ] Click buttons when script says to
+  [ ] Pause after key statements (1-2s)
+  [ ] End at 3:58 mark
+  [ ] Wait 2 seconds of silence
+  [ ] Hit STOP button
+
+IF YOU MESS UP:
+  [ ] Don't panic
+  [ ] Pause for 3 seconds (easier to edit)
+  [ ] Restart that section
+  [ ] Continue from where you left off
+  [ ] OR restart entire recording (if early in)
+
+================================================================================
+CLICK SEQUENCE ✓ (IN ORDER)
+================================================================================
+
+  [ ] 1:35 - Click "💧 Soft Decline" button (blue)
+  [ ] 1:37 - Wait for result to appear (2s)
+  [ ] 1:40 - Scroll down to show decision
+  [ ] 2:05 - Scroll back up
+  [ ] 2:12 - Click "🔴 Hard Decline" button (red)
+  [ ] 2:14 - Wait for result (2s)
+  [ ] 2:15 - Scroll down to show decision
+  [ ] 2:42 - [OPTIONAL] Click "View Full Details" button
+  [ ] 3:02 - Click "📊 Batch Results" tab
+  [ ] 3:05 - Show Treatment vs Control comparison
+  [ ] 3:50 - [OPTIONAL] Click back to Start Here tab
+
+================================================================================
+KEY NUMBERS TO SAY ✓ (MUST MEMORIZE)
+================================================================================
+
+  [ ] ₹445,555 - Net attributable recovery
+  [ ] 55% - Treatment group recovery rate
+  [ ] 32% - Control group recovery rate
+  [ ] 45% - Soft declines that fix themselves
+  [ ] 0.17 - Soft decline lift (low)
+  [ ] 0.25 - Hard decline lift (high)
+  [ ] 2.45 - Z-score
+  [ ] 0.007 - P-value
+
+If you forget exact numbers, approximate:
+  "Around ₹450,000", "About 17%", "Around half", etc.
+
+================================================================================
+EMPHASIS WORDS ✓ (SAY LOUDER/SLOWER)
+================================================================================
+
+  [ ] Control group
+  [ ] 45%
+  [ ] Revenue theater
+  [ ] Restraint
+  [ ] Lift
+  [ ] NEVER (autopay can't fix)
+  [ ] Mandate
+  [ ] ₹445,555
+  [ ] Not luck
+  [ ] Measured
+
+================================================================================
+POST-RECORDING ✓
+================================================================================
+
+IMMEDIATE CHECKS:
+  [ ] Play back entire video
+  [ ] Audio is clear (no echo, clipping, background noise)
+  [ ] Video is smooth (no lag, stuttering)
+  [ ] Duration: 3:55 - 4:05 (acceptable range)
+  [ ] All clicks worked (buttons responded)
+  [ ] Key numbers are visible when mentioned
+
+IF GOOD:
+  [ ] Save file with clear name: RevRecover_Demo_v1.mp4
+  [ ] Back up to cloud storage immediately
+  [ ] Proceed to editing
+
+IF BAD:
+  [ ] Identify what went wrong
+  [ ] Fix the issue
+  [ ] Take 5-minute break
+  [ ] Record again (take 2)
+
+================================================================================
+EDITING CHECKLIST ✓
+================================================================================
+
+BASIC EDITS (Must do):
+  [ ] Trim silence at start (keep 1s)
+  [ ] Trim silence at end (keep 2s)
+  [ ] Cut long pauses (keep only 1-2s intentional ones)
+  [ ] Cut restarts/stumbles
+  [ ] Verify final duration: 3:55 - 4:05
+
+OPTIONAL EDITS (If time):
+  [ ] Add title card: "RevRecover: Measured Revenue Recovery"
+  [ ] Zoom on ₹445,555 number at 0:05
+  [ ] Zoom on Treatment/Control at 3:15
+  [ ] Add text overlays for key numbers
+  [ ] Add captions/subtitles
+  [ ] Add end screen with contact info
+  [ ] Fade to black at end
+
+AUDIO EDITS (If needed):
+  [ ] Normalize audio levels
+  [ ] Remove background hum (noise reduction)
+  [ ] Compress dynamics (even out volume)
+  [ ] Add subtle background music (optional, risky)
+
+QUALITY CHECK:
+  [ ] Watch entire video (no skipping)
+  [ ] Audio synced with video (no lag)
+  [ ] Transitions are smooth
+  [ ] Text is readable (if added)
+  [ ] No jarring cuts
+
+================================================================================
+EXPORT SETTINGS ✓
+================================================================================
+
+FORMAT:
+  [ ] File format: MP4
+  [ ] Video codec: H.264
+  [ ] Audio codec: AAC
+
+QUALITY:
+  [ ] Resolution: 1920x1080 (1080p)
+  [ ] Frame rate: 30fps
+  [ ] Bitrate: 5000 kbps (or "High Quality" preset)
+  [ ] Audio: 192 kbps, 48kHz
+
+FILE:
+  [ ] Filename: RevRecover_4min_Final.mp4
+  [ ] Size: Aim for 50-150 MB (check before uploading)
+  [ ] Test: Play in VLC/media player before uploading
+
+================================================================================
+UPLOAD/SUBMISSION ✓
+================================================================================
+
+BEFORE UPLOADING:
+  [ ] Final watch-through (no errors)
+  [ ] Duration confirmed: 4:00 ± 5 seconds
+  [ ] File size reasonable (< 200 MB)
+  [ ] Have thumbnail ready (optional)
+
+UPLOAD TO:
+  [ ] YouTube (private/unlisted)
+  [ ] Vimeo
+  [ ] Google Drive (if sharing link)
+  [ ] Submission platform (wherever required)
+
+METADATA:
+  [ ] Title: RevRecover - Measured Revenue Recovery
+  [ ] Description: (Brief summary + key stats)
+  [ ] Tags: revenue recovery, AI, payment recovery, SaaS
+  [ ] Privacy: Set appropriately
+
+SHARE:
+  [ ] Copy link
+  [ ] Test link in incognito window
+  [ ] Submit to judging platform
+  [ ] Share with teammates (if any)
+
+================================================================================
+BACKUP PLAN ✓ (If Something Goes Wrong)
+================================================================================
+
+PROBLEM: Button doesn't work during recording
+  FIX: Pause, refresh page (Ctrl+R), restart that section
+       Edit out the pause later
+
+PROBLEM: Server crashes
+  FIX: Stop recording, restart server, verify it works, record again
+       OR use pre-recorded backup footage (if you made one)
+
+PROBLEM: You stumble on words multiple times
+  FIX: Stop, take 5-minute break, restart recording
+       Don't try to save a bad take
+
+PROBLEM: Recording software freezes
+  FIX: Force quit, restart software, verify settings, try again
+       Consider using different software (e.g., Windows Game Bar)
+
+PROBLEM: Audio has echo/background noise
+  FIX: Move to quieter room, closer to mic, try again
+       OR use noise reduction in post (Audacity, free)
+
+PROBLEM: Video is over 4:05
+  FIX: Cut Audit Trail section (save 20s)
+       Speak slightly faster (but still clear)
+       Trim pauses in editing
+
+PROBLEM: Video is under 3:55
+  FIX: Speak slightly slower (but natural)
+       Add pauses after key statements
+       Expand sensitivity band explanation
+
+================================================================================
+THE NIGHT BEFORE ✓
+================================================================================
+
+PREP:
+  [ ] Read script 3 times (know it well)
+  [ ] Test all equipment (mic, recorder)
+  [ ] Verify server runs without errors
+  [ ] Get good sleep (8 hours)
+  [ ] Vocal rest (no yelling, no whispering)
+
+MORNING OF:
+  [ ] Warm up voice (hum, scales)
+  [ ] Hydrate (water, not coffee before recording)
+  [ ] Eat light (no dairy—causes phlegm)
+  [ ] Set up recording space (clear clutter)
+  [ ] Do a practice run (final timing check)
+
+================================================================================
+MINDSET ✓
+================================================================================
+
+REMEMBER:
+  • You built this system—you know it cold
+  • The system proves itself—you're just the tour guide
+  • First take rarely perfect—that's why editing exists
+  • Judges care about the IDEA and PROOF, not production value
+  • 4 minutes is short—cut to the insight, skip the fluff
+
+DON'T:
+  • Rush (speak at comfortable pace)
+  • Apologize (if you stumble, just restart)
+  • Over-explain (let the UI show it)
+  • Worry about perfection (good enough is good enough)
+
+DO:
+  • Speak with confidence (you earned it)
+  • Emphasize key moments (lift, restraint, control group)
+  • Let pauses breathe (silence is powerful)
+  • Trust your prep (you've got this)
+
+================================================================================
+FINAL FINAL CHECKLIST ✓
+================================================================================
+
+5 MINUTES BEFORE RECORDING:
+  [ ] Server running, page loaded, refreshed
+  [ ] Recording software open, settings verified
+  [ ] Mic tested, audio levels good
+  [ ] Script available, key numbers memorized
+  [ ] Notifications off, phone silent, door closed
+  [ ] Water nearby, throat clear
+  [ ] Take 3 deep breaths
+  [ ] Mindset: "I'm explaining something smart to someone smart"
+
+HIT RECORD.
+
+================================================================================
+YOU'VE GOT THIS! 🎬
+================================================================================
+
+Remember: The system speaks for itself. 
+Your job is to guide attention to the right moments.
+
+Hook (₹445k, control group) → Demo (wait vs act) → Proof (Treatment 55%, Control 32%)
+
+Nail those three, and the video works.
+
+Good luck! 🚀
+
+================================================================================

@@ -1,0 +1,18 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Exclude presentation and analysis files
+*.html
+PRESENTATION_*.md
+QUICK_REFERENCE_*.md
+COMPETITOR_ANALYSIS.md
+FINAL_*.md
+ALL_FIVE_*.md
+REVRECOVER_VS_*.md
+razorpay-buildathon-main/

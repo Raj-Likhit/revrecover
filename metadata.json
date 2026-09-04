@@ -1,0 +1,6 @@
+{
+  "name": "RevRecover",
+  "description": "AI Revenue Recovery and e-mandate dunning platform with lift-based scoring, policy-gated restraint, and RBI compliance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
