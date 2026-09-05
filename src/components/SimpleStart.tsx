@@ -37,12 +37,12 @@ export function SimpleStart({ stats, onTriggerEvent, onSwitchToTab, lastTriggere
             RevRecover
           </h1>
           <p className="text-xl text-stone-200 mb-6 leading-relaxed font-light">
-            A deterministic policy engine that proves <strong className="text-amber-300 font-semibold">26.6% lift</strong> through smart triage, rigorous control groups, and strategic restraint.
+            A deterministic policy engine demonstrating <strong className="text-amber-300 font-semibold">26.6% lift</strong> in a controlled simulation through smart triage, rigorous control groups, and strategic restraint.
           </p>
           <div className="grid grid-cols-3 gap-4">
             <div className="bg-white/5 backdrop-blur-lg rounded-xl p-4 border border-white/10 shadow-lg hover:bg-white/10 transition-all">
               <div className="text-2xl font-black text-green-400">+26.6%</div>
-              <div className="text-xs text-stone-400 mt-1">Proven Lift</div>
+              <div className="text-xs text-stone-400 mt-1">Simulated Lift</div>
             </div>
             <div className="bg-white/5 backdrop-blur-lg rounded-xl p-4 border border-white/10 shadow-lg hover:bg-white/10 transition-all">
               <div className="text-2xl font-black text-blue-400">6</div>
@@ -280,7 +280,7 @@ export function SimpleStart({ stats, onTriggerEvent, onSwitchToTab, lastTriggere
             <div className="flex gap-3 items-start bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-3 hover:bg-white/10 transition-all">
               <div>
                 <div className="text-sm font-semibold text-white">Halted Subscriptions</div>
-                <div className="text-xs text-stone-400">Empathy ladder — 85% recovery</div>
+                <div className="text-xs text-stone-400">Empathy ladder — 30% → 85% recovery</div>
               </div>
             </div>
 
