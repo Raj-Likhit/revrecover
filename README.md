@@ -29,7 +29,7 @@ RevRecover addresses the critical problem of failed subscription payments by int
                              │
                     ┌────────▼────────────┐
                     │  Failure Diagnosis  │
-                    │  (6 Reason Buckets) │
+                    │  (5 Reason Buckets) │
                     └────────┬────────────┘
                              │
           ┏━━━━━━━━━━━━━━━━━━▼━━━━━━━━━━━━━━━━━━┓
@@ -71,8 +71,8 @@ Incoming Failure
        ├─► afa_required ──────────► ACT  (p_base: 15%, p_treated: 45%, +30pp)
        │                            ↳ OTP authentication link (RBI ₹15k rule)
        │
-       ├─► technical_decline ─────► WAIT (p_base: 50%, p_treated: 65%, +15pp)
-       │                            ↳ Gateway timeout, transient issue
+       ├─► subscription_halted ───► ACT  (p_base: 30%, p_treated: 85%, +55pp)
+       │                            ↳ Payment link with empathy ladder
        │
        └─► unknown_decline ───────► ESCALATE (p_base: 30%, p_treated: 42%, +12pp)
                                     ↳ Human review queue
@@ -171,7 +171,7 @@ Application starts at `http://localhost:3000`
 
 ### Recovery Engine
 - **26.6% Simulated Lift** - Validated through control group A/B testing (z=2.59, p=0.0096)
-- **6 Failure Types** - Differential strategies for each bucket
+- **5 Failure Types** - Differential strategies for each bucket
 - **Cost Guardrails** - Only act when expected lift value > cost (5% cap)
 - **Budget Allocation** - Net-EV ranking with daily contact capacity
 
