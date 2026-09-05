@@ -1,5 +1,9 @@
 import { GoogleGenAI } from '@google/genai';
 import { MessagePayload, ReasonBucket, LadderStage } from '../src/types/revrecover.js';
+import { logger } from './logger.js';
+import { RAZORPAY_TIMEOUT_MS } from './constants.js';
+
+const GEMINI_TIMEOUT_MS = 6000;
 
 // Initialize Gemini client with user-agent header as per guidelines
 const ai = new GoogleGenAI({
@@ -30,7 +34,7 @@ function parseDraft(rawText: string): { greeting: string; body: string; cta: str
 
 async function generateWithTimeout(prompt: string): Promise<{ greeting: string; body: string; cta: string } | undefined> {
   const request = ai.models.generateContent({ model: 'gemini-3.7-flash', contents: prompt, config: { responseMimeType: 'application/json' } });
-  const timeout = new Promise<undefined>(resolve => setTimeout(() => resolve(undefined), 6000));
+  const timeout = new Promise<undefined>(resolve => setTimeout(() => resolve(undefined), GEMINI_TIMEOUT_MS));
   const response = await Promise.race([request.then(value => parseDraft(value.text || '')), timeout]);
   return response;
 }
@@ -120,7 +124,11 @@ Rules:
         archetypeCache.set(archetypeKey, draft);
       }
     } catch (err) {
-      console.warn('Gemini drafting fallback activated:', err);
+      logger.warn('Gemini API call failed, using deterministic template', { 
+        error: err instanceof Error ? err.message : String(err),
+        reasonBucket,
+        stage 
+      });
       draft = getDeterministicTemplate(firstName, reasonBucket, stage, isCardUpdate);
     }
   }

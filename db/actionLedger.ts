@@ -101,9 +101,10 @@ export function reserveAction(
     });
     const row = getActionById(db, Number(info.lastInsertRowid))!;
     return { reserved: true, row };
-  } catch (err: any) {
+  } catch (err) {
     // SQLITE_CONSTRAINT_UNIQUE on (subscription_id, ladder_stage)
-    if (String(err?.code).startsWith('SQLITE_CONSTRAINT')) {
+    const errorCode = err && typeof err === 'object' && 'code' in err ? String(err.code) : '';
+    if (errorCode.startsWith('SQLITE_CONSTRAINT')) {
       const existing = getOpenAction(db, c.subscriptionId, c.ladderStage);
       if (existing) return { reserved: false, existing };
     }

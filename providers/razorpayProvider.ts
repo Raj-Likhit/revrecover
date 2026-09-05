@@ -28,8 +28,10 @@
  *    your test-mode keys.
  */
 
+import { logger } from '../server/logger.js';
+import { RAZORPAY_TIMEOUT_MS, RAZORPAY_MAX_RETRIES } from '../server/constants.js';
+
 const RAZORPAY_API_BASE = process.env.RAZORPAY_API_BASE ?? 'https://api.razorpay.com/v1';
-const TIMEOUT_MS = 8000;
 
 export type ProviderResult =
   | { ok: true; provider: 'razorpay'; providerRefId: string; hostedUrl: string; raw: unknown }
@@ -44,12 +46,11 @@ function authHeader(): string {
   return 'Basic ' + Buffer.from(`${keyId}:${keySecret}`).toString('base64');
 }
 
-async function withTimeoutAndRetry<T>(fn: (signal: AbortSignal) => Promise<T>, retries = 1): Promise<T> {
-  // Plan §13: "Timeouts + one retry, then fallback on both LLM and Razorpay calls."
+async function withTimeoutAndRetry<T>(fn: (signal: AbortSignal) => Promise<T>, retries = RAZORPAY_MAX_RETRIES): Promise<T> {
   let lastErr: unknown;
   for (let attempt = 0; attempt <= retries; attempt++) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    const timer = setTimeout(() => controller.abort(), RAZORPAY_TIMEOUT_MS);
     try {
       return await fn(controller.signal);
     } catch (err) {
@@ -103,8 +104,10 @@ export async function createPaymentLink(params: {
       return { ok: false, error: json?.error?.description ?? `HTTP ${res.status}`, retriable: res.status >= 500 };
     }
     return { ok: true, provider: 'razorpay', providerRefId: json.id, hostedUrl: json.short_url, raw: json };
-  } catch (err: any) {
-    return { ok: false, error: err?.message ?? 'unknown error', retriable: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'unknown error';
+    logger.warn('Payment link creation failed', { error: message, subscriptionId: params.subscriptionId });
+    return { ok: false, error: message, retriable: true };
   }
 }
 
@@ -132,7 +135,9 @@ export async function getCardUpdateCheckoutUrl(params: { subscriptionId: string 
     }
     const hostedUrl = `${json.short_url}?subscription_card_change=1`;
     return { ok: true, provider: 'razorpay', providerRefId: params.subscriptionId, hostedUrl, raw: json };
-  } catch (err: any) {
-    return { ok: false, error: err?.message ?? 'unknown error', retriable: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'unknown error';
+    logger.warn('Card update checkout URL fetch failed', { error: message, subscriptionId: params.subscriptionId });
+    return { ok: false, error: message, retriable: true };
   }
 }

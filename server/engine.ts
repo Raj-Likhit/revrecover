@@ -19,6 +19,16 @@ import { computeDecisionTimeCostPaise, computeSettlementCostPaise } from '../pol
 import { reserveAction, recordActionDispatched, recordActionFailed } from '../db/actionLedger.js';
 import { correlatePaymentEvent } from '../db/attribution.js';
 import { createPaymentLink, getCardUpdateCheckoutUrl } from '../providers/razorpayProvider.js';
+import { logger } from './logger.js';
+import { 
+  DEFAULT_DAILY_CONTACT_CAPACITY, 
+  DEFAULT_MOCKED_CLOCK_TIME,
+  QUIET_HOURS_START_HOUR,
+  QUIET_HOURS_END_HOUR,
+  IST_OFFSET_HOURS,
+  DAYS_IN_SECONDS,
+  LINK_ABANDONED_THRESHOLD_SECONDS,
+} from './constants.js';
 import type { ScoredCase } from '../types.js';
 
 export const operationalDb = openOperationalDatabase();
@@ -77,12 +87,11 @@ export class RecoveryEngine {
   public cases = new Map<string, SubscriptionCase>();
   public auditLogs: AuditLogEntry[] = [];
   public suppressionList = new Set<string>(); // Phone/Emails that opted out
-  public dailyContactCapacity = 80;
+  public dailyContactCapacity = DEFAULT_DAILY_CONTACT_CAPACITY;
   private store?: RecoveryStore;
 
   constructor(options: { persist?: boolean } = {}) {
-    // Current default timestamp: 2026-08-28 11:30:00 IST (06:00:00 UTC) -> inside quiet hours
-    this.mockedClockTime = Math.floor(new Date('2026-08-28T06:00:00Z').getTime() / 1000);
+    this.mockedClockTime = DEFAULT_MOCKED_CLOCK_TIME;
     if (options.persist) {
       this.store = new RecoveryStore();
       this.restore();
@@ -198,16 +207,13 @@ export class RecoveryEngine {
     };
   }
 
-  // Check if current mocked clock is inside 09:00 - 20:00 IST quiet hours
   public isInsideQuietHours(epochSeconds: number): boolean {
     const date = new Date(epochSeconds * 1000);
-    // Convert to IST (UTC + 5:30)
-    const istOffsetHours = 5.5;
     const utcHours = date.getUTCHours() + date.getUTCMinutes() / 60;
-    let istHours = utcHours + istOffsetHours;
+    let istHours = utcHours + IST_OFFSET_HOURS;
     if (istHours >= 24) istHours -= 24;
 
-    return istHours >= 9.0 && istHours < 20.0;
+    return istHours >= QUIET_HOURS_START_HOUR && istHours < QUIET_HOURS_END_HOUR;
   }
 
   public isOutboundDecision(decision: PolicyDecision): boolean {
@@ -215,13 +221,13 @@ export class RecoveryEngine {
   }
 
   private contactsInWindow(customerPhone: string, now: number): number {
-    const windowStart = now - 30 * 86400;
+    const windowStart = now - 30 * DAYS_IN_SECONDS;
     return this.auditLogs.filter(log => log.customer_phone_masked === customerPhone && log.timestamp >= windowStart &&
       ['simulated_hosted_card_change_checkout', 'simulated_payment_link', 'razorpay_hosted_card_change_checkout', 'razorpay_payment_link'].includes(log.execution_channel)).length;
   }
 
   private contactsToday(now: number): number {
-    const dayStart = now - (now % 86400);
+    const dayStart = now - (now % DAYS_IN_SECONDS);
     return this.auditLogs.filter(log => log.timestamp >= dayStart &&
       ['simulated_hosted_card_change_checkout', 'simulated_payment_link', 'razorpay_hosted_card_change_checkout', 'razorpay_payment_link'].includes(log.execution_channel)).length;
   }
@@ -231,7 +237,7 @@ export class RecoveryEngine {
     const now = this.mockedClockTime;
     for (const subCase of Array.from(this.cases.values())) {
       if (subCase.invoice_paid || subCase.outcome === 'stopped') continue;
-      if (subCase.status === 'pending' && now - subCase.charge_at >= 3 * 86400) {
+      if (subCase.status === 'pending' && now - subCase.charge_at >= 3 * DAYS_IN_SECONDS) {
         await this.processWebhook({
           event_id: `evt_scheduler_halted_${subCase.subscription_id}_${now}`,
           event_type: 'subscription.halted', subscription_id: subCase.subscription_id,
@@ -540,7 +546,10 @@ export class RecoveryEngine {
 
     // Layer 1 Idempotency: Webhook Event Deduplication
     if (this.processedWebhooks.has(event.event_id)) {
-      console.log(`[Idempotency Layer 1] Duplicate webhook event ${event.event_id} ignored.`);
+      logger.debug('Duplicate webhook event ignored', { 
+        eventId: event.event_id,
+        subscriptionId: event.subscription_id 
+      });
       const existingCase = this.cases.get(event.subscription_id)!;
       const lastAudit = this.auditLogs.find(a => a.webhook_event_id === event.event_id) || existingCase.history[existingCase.history.length - 1];
       return { auditEntry: lastAudit, subCase: existingCase, isDuplicate: true };

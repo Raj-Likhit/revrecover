@@ -11,21 +11,34 @@ import { startDispatchQueue } from './queue/dispatchQueue.js';
 import { createPaymentLink, getCardUpdateCheckoutUrl } from './providers/razorpayProvider.js';
 import { rankAndAllocate, budgetAllocationLabel } from './policy/budgetAllocator.js';
 import { saveExperimentRun } from './db/experimentRuns.js';
+import { logger } from './server/logger.js';
+import { 
+  DEFAULT_PORT, 
+  SERVER_HOST, 
+  DEFAULT_BATCH_SIZE, 
+  DEFAULT_SEED,
+  DEFAULT_CASES_LIMIT,
+  DEFAULT_AUDIT_LOGS_LIMIT,
+  MAX_AUDIT_LOGS_LIMIT,
+} from './server/constants.js';
 import type { ScoredCase } from './types.js';
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : DEFAULT_PORT;
 
   app.use(express.json({ verify: (req, _res, buffer) => { (req as express.Request & { rawBody?: Buffer }).rawBody = buffer; } }));
 
   // Initialize initial synthetic batch on startup
   if (globalEngine.cases.size === 0) {
-    console.log('[RevRecover Engine] Bootstrapping initial synthetic batch (seed: 20260828, count: 120)...');
-    await generateAndRunSyntheticBatch(globalEngine, 120, 20260828);
-    console.log('[RevRecover Engine] Initial batch loaded successfully.');
+    logger.info('Bootstrapping initial synthetic batch', { 
+      seed: DEFAULT_SEED, 
+      count: DEFAULT_BATCH_SIZE 
+    });
+    await generateAndRunSyntheticBatch(globalEngine, DEFAULT_BATCH_SIZE, DEFAULT_SEED);
+    logger.info('Initial batch loaded successfully');
   } else {
-    console.log(`[RevRecover Engine] Restored ${globalEngine.cases.size} persisted cases.`);
+    logger.info('Restored persisted cases', { count: globalEngine.cases.size });
   }
 
   // Deferred quiet-hour actions use the same provider calls as immediate actions.
@@ -76,8 +89,8 @@ async function startServer() {
       benchmarks: BENCHMARK_MATRIX,
       sensitivity,
       cases_count: cases.length,
-      cases: cases.slice(0, 100), // Limit for payload speed
-      recent_audit_logs: globalEngine.auditLogs.slice(0, 50),
+      cases: cases.slice(0, DEFAULT_CASES_LIMIT),
+      recent_audit_logs: globalEngine.auditLogs.slice(0, DEFAULT_AUDIT_LOGS_LIMIT),
     });
   });
 
@@ -96,7 +109,7 @@ async function startServer() {
       logs = logs.filter(l => l.outcome === outcome);
     }
 
-    const maxLimit = limit ? parseInt(limit as string, 10) : 100;
+    const maxLimit = limit ? Math.min(parseInt(limit as string, 10), MAX_AUDIT_LOGS_LIMIT) : MAX_AUDIT_LOGS_LIMIT;
     res.json({
       total: logs.length,
       logs: logs.slice(0, maxLimit),
@@ -144,16 +157,20 @@ async function startServer() {
       });
 
       res.json({ status: 'success', ...result });
-    } catch (err: any) {
-      console.error('Webhook processing error:', err);
-      res.status(500).json({ status: 'error', message: err.message });
+    } catch (err) {
+      logger.error('Webhook processing error', err, { 
+        event_type: req.body.event_type,
+        subscription_id: req.body.subscription_id 
+      });
+      const message = err instanceof Error ? err.message : 'Unknown error occurred';
+      res.status(500).json({ status: 'error', message });
     }
   });
 
   // 4. Live Trigger Simulation Event (Single scenario for stage demo)
   app.post('/api/trigger/event', async (req, res) => {
+    const { scenario } = req.body;
     try {
-      const { scenario } = req.body;
       const ts = globalEngine.mockedClockTime;
       const subId = `sub_live_${Date.now().toString().slice(-6)}`;
 
@@ -248,16 +265,18 @@ async function startServer() {
 
       const result = await globalEngine.processWebhook(eventData);
       res.json({ status: 'success', scenario, ...result });
-    } catch (err: any) {
-      console.error('Trigger event error:', err);
-      res.status(500).json({ status: 'error', message: err.message });
+    } catch (err) {
+      const errorScenario = req.body.scenario || 'unknown';
+      logger.error('Trigger event error', err, { scenario: errorScenario });
+      const message = err instanceof Error ? err.message : 'Unknown error occurred';
+      res.status(500).json({ status: 'error', message });
     }
   });
 
   // 5. Run Synthetic Batch Simulator
   app.post('/api/batch/run', async (req, res) => {
     try {
-      const count = req.body.count || 120;
+      const count = req.body.count || DEFAULT_BATCH_SIZE;
       const seed = req.body.seed || Math.floor(Math.random() * 1000000);
       const batchResult = await generateAndRunSyntheticBatch(globalEngine, count, seed);
       const stats = globalEngine.calculateStats();
@@ -308,9 +327,10 @@ async function startServer() {
         sensitivity,
         experiment_run_id: experiment.runId,
       });
-    } catch (err: any) {
-      console.error('Batch run error:', err);
-      res.status(500).json({ status: 'error', message: err.message });
+    } catch (err) {
+      logger.error('Batch run error', err);
+      const message = err instanceof Error ? err.message : 'Unknown error occurred';
+      res.status(500).json({ status: 'error', message });
     }
   });
 
@@ -438,8 +458,8 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[RevRecover] Server running on http://0.0.0.0:${PORT}`);
+  app.listen(PORT, SERVER_HOST, () => {
+    logger.info('Server running', { url: `http://${SERVER_HOST}:${PORT}` });
   });
 }
 

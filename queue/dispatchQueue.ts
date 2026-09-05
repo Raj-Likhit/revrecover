@@ -20,14 +20,16 @@
 
 import Database from 'better-sqlite3';
 import { getQueuedActions, recordActionDispatched, recordActionFailed, type ActionRow } from '../db/actionLedger';
+import { logger } from '../server/logger.js';
+import { QUIET_HOURS_START_HOUR, QUIET_HOURS_END_HOUR, IST_OFFSET_HOURS } from '../server/constants.js';
 
-const IST_OFFSET_MINUTES = 5 * 60 + 30;
+const IST_OFFSET_MINUTES = IST_OFFSET_HOURS * 60;
 
 export function isWithinQuietHoursIST(date: Date = new Date()): boolean {
   const istMs = date.getTime() + IST_OFFSET_MINUTES * 60 * 1000;
   const istDate = new Date(istMs);
   const hour = istDate.getUTCHours();
-  return hour >= 9 && hour < 20; // 09:00–20:00 IST, per plan §6
+  return hour >= QUIET_HOURS_START_HOUR && hour < QUIET_HOURS_END_HOUR;
 }
 
 export interface DispatchQueueOptions {
@@ -80,7 +82,7 @@ export function startDispatchQueue(opts: DispatchQueueOptions): DispatchQueueHan
   }
 
   const interval = setInterval(() => {
-    tick().catch((err) => console.error('[dispatchQueue] tick failed', err));
+    tick().catch((err) => logger.error('Dispatch queue tick failed', err));
   }, pollIntervalMs);
 
   return { stop: () => clearInterval(interval), tick };
