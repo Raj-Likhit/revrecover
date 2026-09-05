@@ -7,12 +7,16 @@ coverage/
 .env*
 !.env.example
 
-# Exclude presentation and analysis files
+# Exclude presentation and internal documentation files
 *.html
+*.docx
+PRESENTATION_SCRIPT_5MIN_v2.md
 PRESENTATION_*.md
 QUICK_REFERENCE_*.md
 COMPETITOR_ANALYSIS.md
 FINAL_*.md
 ALL_FIVE_*.md
 REVRECOVER_VS_*.md
+IDEMPOTENCY_LAYER.md
+WHAT_IS_ACTUALLY_BUILT.md
 razorpay-buildathon-main/
