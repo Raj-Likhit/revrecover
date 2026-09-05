@@ -1,8 +1,198 @@
 # RevRecover
 
-**Smart Triage Payment Recovery System**
+> **AI-Powered Payment Recovery System with Smart Triage and Control Group Validation**
 
-RevRecover uses AI-driven smart triage to demonstrate **26.6% lift** in a controlled simulation through strategic restraint, control group validation, and compliance-first design.
+RevRecover is a production-ready payment failure recovery platform that uses intelligent classification, strategic restraint, and A/B testing to maximize subscription revenue recovery while minimizing costs. Built for Indian SaaS businesses using Razorpay recurring payments.
+
+**Key Achievement**: 26.6% simulated lift over baseline through differential treatment of soft vs. hard declines, validated with statistical significance (z=2.59, p=0.0096).
+
+[Architecture Documentation](./ARCHITECTURE.md) | [Presentation Deck](./revrecover-presentation-5min.html)
+
+---
+
+## Table of Contents
+
+- [System Overview](#system-overview)
+- [Quick Start](#quick-start)
+- [Core Architecture](#core-architecture)
+- [Key Features](#key-features)
+- [Performance Metrics](#performance-metrics)
+- [Technology Stack](#technology-stack)
+- [Project Structure](#project-structure)
+- [Configuration](#configuration)
+- [Testing](#testing)
+- [Compliance](#compliance)
+
+---
+
+## System Overview
+
+RevRecover addresses the critical problem of failed subscription payments by intelligently triaging failures into distinct categories and applying evidence-based recovery strategies. Unlike traditional "spray-and-pray" approaches, the system shows strategic restraint where autopay succeeds organically and acts decisively where manual intervention creates measurable lift.
+
+### Decision Flow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                     Payment Failure Webhook                         │
+│                    (Razorpay Subscription)                          │
+└────────────────────────────┬────────────────────────────────────────┘
+                             │
+                    ┌────────▼────────┐
+                    │  Idempotency    │
+                    │  Check Layer 1  │
+                    └────────┬────────┘
+                             │
+                    ┌────────▼────────────┐
+                    │  Failure Diagnosis  │
+                    │  (6 Reason Buckets) │
+                    └────────┬────────────┘
+                             │
+          ┏━━━━━━━━━━━━━━━━━━▼━━━━━━━━━━━━━━━━━━┓
+          ┃        Policy Evaluation Engine       ┃
+          ┃  • Calculate Lift (p_treated - p_base)┃
+          ┃  • Compute Net EV = Lift × Amount - Cost┃
+          ┃  • Apply Cost Guardrail (5% max)      ┃
+          ┃  • Check Contact Limits & Quiet Hours ┃
+          ┗━━━━━━━━━━━━━━━┬━━━━━━━━━━━━━━━━━━━━━━┛
+                          │
+              ┌───────────┴───────────┐
+              │                       │
+      ┌───────▼────────┐      ┌──────▼──────────┐
+      │  Treatment Arm │      │   Control Arm   │
+      │     (80%)      │      │     (20%)       │
+      │                │      │                 │
+      │ Execute Policy │      │  No Action      │
+      │    Decision    │      │  (Baseline)     │
+      └───────┬────────┘      └──────┬──────────┘
+              │                      │
+              │                      │
+      ┌───────▼──────────────────────▼──────────┐
+      │         Audit Log + Metrics              │
+      │    True Lift = Treatment - Control      │
+      └──────────────────────────────────────────┘
+```
+
+### Failure Classification System
+
+```
+Incoming Failure
+       │
+       ├─► insufficient_funds ────► WAIT (p_base: 45%, p_treated: 62%, +17pp)
+       │                            ↳ Autopay retries succeed organically
+       │
+       ├─► mandate_expired ───────► ACT  (p_base: 5%,  p_treated: 30%, +25pp)
+       │                            ↳ Card update link required
+       │
+       ├─► afa_required ──────────► ACT  (p_base: 15%, p_treated: 45%, +30pp)
+       │                            ↳ OTP authentication link (RBI ₹15k rule)
+       │
+       ├─► technical_decline ─────► WAIT (p_base: 50%, p_treated: 65%, +15pp)
+       │                            ↳ Gateway timeout, transient issue
+       │
+       └─► unknown_decline ───────► ESCALATE (p_base: 30%, p_treated: 42%, +12pp)
+                                    ↳ Human review queue
+```
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+ (for server runtime)
+- npm or bun (package manager)
+- Razorpay test account (optional, for live testing)
+- Google Gemini API key (optional, for AI message drafting)
+
+### Installation
+
+```bash
+# Clone repository
+git clone <repository-url>
+cd revrecover
+
+# Install dependencies
+npm install
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your API keys
+```
+
+### Running the Application
+
+```bash
+# Development mode (hot reload)
+npm run dev
+
+# Production build
+npm run build
+npm start
+
+# Type checking
+npm run lint
+```
+
+The application starts at `http://localhost:3000`:
+- **Frontend**: React dashboard with live scenario triggers
+- **Backend**: Express API with webhook endpoints
+- **Database**: SQLite at `./data/revrecover.sqlite`
+
+### Demo Scenarios
+
+The home screen provides 5 one-click scenarios to demonstrate the recovery engine:
+
+| Scenario | Failure Type | System Response | Expected Lift |
+|----------|-------------|-----------------|---------------|
+| **Soft Decline** | Insufficient funds | WAIT for autopay | +17pp (45%→62%) |
+| **Hard Decline** | Card expired | SEND card update link | +25pp (5%→30%) |
+| **AFA Required** | Amount ≥ ₹15,000 | SEND OTP auth link | +30pp (15%→45%) |
+| **Subscription Halted** | T+3 retry exhausted | SEND payment link (empathy ladder) | +55pp (30%→85%) |
+| **Unknown Decline** | Ambiguous error code | ESCALATE to human review | +12pp (30%→42%) |
+
+---
+
+## Core Architecture
+
+### System Components
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                   React Frontend (Vite)                       │
+│   Dashboard │ Batch Simulator │ Audit Viewer │ Compliance   │
+└────────────────────────┬─────────────────────────────────────┘
+                         │ REST API (JSON)
+┌────────────────────────▼─────────────────────────────────────┐
+│                    Express Server (Node.js)                   │
+│  /api/webhook/razorpay  │  /api/trigger/event  │  /api/batch │
+└──┬────────────────┬──────────────────┬─────────────────────┬─┘
+   │                │                  │                     │
+┌──▼─────────┐  ┌──▼──────────┐  ┌───▼────────────┐  ┌────▼──────┐
+│  Recovery  │  │   Dispatch  │  │   Razorpay     │  │  Gemini   │
+│   Engine   │◄─┤    Queue    │  │   Provider     │  │  AI LLM   │
+│  (Policy)  │  │  (Worker)   │  │  (Payment)     │  │ (Messages)│
+└──┬─────────┘  └─────────────┘  └────────────────┘  └───────────┘
+   │
+┌──▼──────────────────────────────────────────────────────────────┐
+│                    SQLite Database (WAL Mode)                    │
+│   actions │ attribution_events │ experiment_runs │ snapshots    │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### Data Flow: Webhook → Recovery → Execution
+
+1. **Webhook Ingestion**: Razorpay sends `subscription.pending` event
+2. **Signature Verification**: HMAC SHA256 validation (security)
+3. **Idempotency Check**: Deduplicate by `event_id` (Layer 1)
+4. **Failure Diagnosis**: Classify into 6 reason buckets with confidence
+5. **Lift Calculation**: Fetch benchmark probabilities, compute net EV
+6. **Policy Decision**: Apply cost guardrail, contact limits, quiet hours
+7. **A/B Assignment**: Random 80/20 split (treatment vs control)
+8. **Action Reservation**: Write to DB with UNIQUE constraint (Layer 2 idempotency)
+9. **Execution**: Create Razorpay Payment Link or queue for quiet hours
+10. **Audit Logging**: Record full decision rationale with cost tracking
+
+---
 
 ## Key Features
 
