@@ -14,7 +14,7 @@ const SCENARIOS: Scenario[] = [
   {
     id: 'soft_decline',
     name: 'Soft Decline',
-    emoji: '💧',
+    emoji: '⏳',
     label: 'System WAITS',
     color: '#06B6D4',
     description: 'Card declined, but likely temporary. Wait for card update.',
@@ -23,7 +23,7 @@ const SCENARIOS: Scenario[] = [
   {
     id: 'hard_decline',
     name: 'Hard Decline',
-    emoji: '🔴',
+    emoji: '⚡',
     label: 'System ACTS',
     color: '#F43F5E',
     description: 'Card lost/stolen. Send immediate card update.',
@@ -32,7 +32,7 @@ const SCENARIOS: Scenario[] = [
   {
     id: 'afa_required',
     name: 'AFA Required',
-    emoji: '🔐',
+    emoji: '🔑',
     label: 'System SENDS OTP',
     color: '#A855F7',
     description: 'Customer needs to authenticate. Send OTP flow.',
@@ -41,7 +41,7 @@ const SCENARIOS: Scenario[] = [
   {
     id: 'halted',
     name: 'Halted',
-    emoji: '⏸️',
+    emoji: '🤝',
     label: 'System EMPATHIZES',
     color: '#F59E0B',
     description: 'Multiple declines. Customer likely stressed. Wait.',
@@ -50,7 +50,7 @@ const SCENARIOS: Scenario[] = [
   {
     id: 'unknown',
     name: 'Unknown Decline',
-    emoji: '❓',
+    emoji: '🔍',
     label: 'System ESCALATES',
     color: '#6B7280',
     description: 'Unusual decline reason. Route to human review.',
@@ -112,83 +112,84 @@ export const ScenarioGrid: React.FC<ScenarioGridProps> = ({ onScenarioClick, isL
           </p>
         </div>
 
-        {/* Hexagon Grid */}
+        {/* Hexagon Grid - Proper spacing for 5 hexagons */}
         <div className="flex justify-center items-center mb-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 max-w-5xl">
-            {/* Row 1 */}
-            <div className="col-span-1 sm:col-span-1 lg:col-span-1 flex justify-center">
-              <HexagonCard
-                scenario={SCENARIOS[0]}
-                isVisible={isVisible}
-                isActive={activeScenario === SCENARIOS[0].id}
-                isLoading={loadingScenario === SCENARIOS[0].id}
-                onClick={() => handleScenarioClick(SCENARIOS[0].id)}
-                delay={0}
-              />
+          <div className="max-w-6xl w-full px-4">
+            {/* Row 1: Center hexagon */}
+            <div className="flex justify-center mb-8 lg:mb-16">
+              <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-44 md:h-44">
+                <HexagonCard
+                  scenario={SCENARIOS[0]}
+                  isVisible={isVisible}
+                  isActive={activeScenario === SCENARIOS[0].id}
+                  isLoading={loadingScenario === SCENARIOS[0].id}
+                  onClick={() => handleScenarioClick(SCENARIOS[0].id)}
+                  delay={0}
+                />
+              </div>
             </div>
 
-            {/* Spacer for centering */}
-            <div className="hidden lg:block" />
-
-            <div className="col-span-1 sm:col-span-1 lg:col-span-1 flex justify-center">
-              <HexagonCard
-                scenario={SCENARIOS[1]}
-                isVisible={isVisible}
-                isActive={activeScenario === SCENARIOS[1].id}
-                isLoading={loadingScenario === SCENARIOS[1].id}
-                onClick={() => handleScenarioClick(SCENARIOS[1].id)}
-                delay={100}
-              />
+            {/* Row 2: Two hexagons side by side */}
+            <div className="flex justify-center gap-6 sm:gap-12 lg:gap-20 mb-8 lg:mb-12 flex-wrap">
+              <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-44 md:h-44">
+                <HexagonCard
+                  scenario={SCENARIOS[1]}
+                  isVisible={isVisible}
+                  isActive={activeScenario === SCENARIOS[1].id}
+                  isLoading={loadingScenario === SCENARIOS[1].id}
+                  onClick={() => handleScenarioClick(SCENARIOS[1].id)}
+                  delay={100}
+                />
+              </div>
+              <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-44 md:h-44">
+                <HexagonCard
+                  scenario={SCENARIOS[2]}
+                  isVisible={isVisible}
+                  isActive={activeScenario === SCENARIOS[2].id}
+                  isLoading={loadingScenario === SCENARIOS[2].id}
+                  onClick={() => handleScenarioClick(SCENARIOS[2].id)}
+                  delay={150}
+                />
+              </div>
             </div>
 
-            {/* Row 2 */}
-            <div className="col-span-1 sm:col-span-1 lg:col-span-1 flex justify-center">
-              <HexagonCard
-                scenario={SCENARIOS[2]}
-                isVisible={isVisible}
-                isActive={activeScenario === SCENARIOS[2].id}
-                isLoading={loadingScenario === SCENARIOS[2].id}
-                onClick={() => handleScenarioClick(SCENARIOS[2].id)}
-                delay={150}
-              />
-            </div>
-
-            <div className="col-span-1 sm:col-span-1 lg:col-span-1 flex justify-center">
-              <HexagonCard
-                scenario={SCENARIOS[3]}
-                isVisible={isVisible}
-                isActive={activeScenario === SCENARIOS[3].id}
-                isLoading={loadingScenario === SCENARIOS[3].id}
-                onClick={() => handleScenarioClick(SCENARIOS[3].id)}
-                delay={200}
-              />
-            </div>
-
-            {/* Spacer */}
-            <div className="hidden lg:block" />
-
-            {/* Row 3 */}
-            <div className="col-span-1 sm:col-span-2 lg:col-span-1 flex justify-center">
-              <HexagonCard
-                scenario={SCENARIOS[4]}
-                isVisible={isVisible}
-                isActive={activeScenario === SCENARIOS[4].id}
-                isLoading={loadingScenario === SCENARIOS[4].id}
-                onClick={() => handleScenarioClick(SCENARIOS[4].id)}
-                delay={250}
-              />
+            {/* Row 3: Two hexagons side by side */}
+            <div className="flex justify-center gap-6 sm:gap-12 lg:gap-20 mb-8 lg:mb-12 flex-wrap">
+              <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-44 md:h-44">
+                <HexagonCard
+                  scenario={SCENARIOS[3]}
+                  isVisible={isVisible}
+                  isActive={activeScenario === SCENARIOS[3].id}
+                  isLoading={loadingScenario === SCENARIOS[3].id}
+                  onClick={() => handleScenarioClick(SCENARIOS[3].id)}
+                  delay={200}
+                />
+              </div>
+              <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-44 md:h-44">
+                <HexagonCard
+                  scenario={SCENARIOS[4]}
+                  isVisible={isVisible}
+                  isActive={activeScenario === SCENARIOS[4].id}
+                  isLoading={loadingScenario === SCENARIOS[4].id}
+                  onClick={() => handleScenarioClick(SCENARIOS[4].id)}
+                  delay={250}
+                />
+              </div>
             </div>
           </div>
         </div>
 
         {/* Legend */}
-        <div className="mt-16 pt-8 border-t border-stone-700/50">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="mt-20 pt-12 border-t border-stone-700/50">
+          <p className="text-center text-stone-400 text-sm mb-8">Five core decision patterns</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-8">
             {SCENARIOS.map((scenario) => (
-              <div key={scenario.id} className="text-center text-xs">
-                <div className="text-2xl mb-2">{scenario.emoji}</div>
-                <p className="font-bold text-stone-300">{scenario.name}</p>
-                <p className="text-stone-500 text-xs mt-1">{scenario.label}</p>
+              <div key={scenario.id} className="text-center group">
+                <div className="text-4xl mb-3 transition-transform duration-300 group-hover:scale-125">{scenario.emoji}</div>
+                <p className="font-bold text-stone-300 text-sm">{scenario.name}</p>
+                <p className={`text-xs mt-2 transition-colors duration-300`} style={{ color: scenario.color }}>
+                  {scenario.label}
+                </p>
               </div>
             ))}
           </div>
@@ -243,9 +244,9 @@ const HexagonCard: React.FC<HexagonCardProps> = ({ scenario, isVisible, isActive
         }}
       >
         {/* Inner content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          {/* Emoji */}
-          <div className="text-5xl mb-3 drop-shadow-lg animate-bounce" style={{ animationDelay: `${delay * 10}ms` }}>
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+          {/* Icon with better styling */}
+          <div className="text-5xl sm:text-6xl mb-4 drop-shadow-lg transition-transform duration-300" style={{ transform: isHovered ? 'scale(1.15)' : 'scale(1)' }}>
             {scenario.emoji}
           </div>
 
@@ -258,16 +259,16 @@ const HexagonCard: React.FC<HexagonCardProps> = ({ scenario, isVisible, isActive
 
           {/* Description on hover */}
           {isHovered && !isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center p-4 text-center">
-              <p className="text-xs font-medium text-stone-100">{scenario.description}</p>
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+              <p className="text-xs sm:text-sm font-medium text-stone-100 leading-tight">{scenario.description}</p>
             </div>
           )}
 
           {/* Label normally */}
           {!isHovered && !isLoading && (
             <>
-              <p className="text-sm font-bold text-stone-100 text-center">{scenario.name}</p>
-              <p className="text-xs text-stone-400 mt-1 text-center">{scenario.label}</p>
+              <p className="text-sm sm:text-base font-bold text-stone-100 text-center leading-tight">{scenario.name}</p>
+              <p className="text-xs text-stone-400 mt-2 text-center">{scenario.label}</p>
             </>
           )}
         </div>

@@ -75,10 +75,10 @@ export const ProblemSolution: React.FC = () => {
                     }`}
                     style={{ transitionDelay: `${isVisible ? idx * 100 : 0}ms` }}
                   >
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-rose-500/20 border border-rose-500/50 flex items-center justify-center mt-1">
-                      <span className="text-lg font-bold text-rose-400">{item.icon}</span>
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-rose-500/20 border border-rose-500/50 flex items-center justify-center mt-0.5">
+                      <span className="text-base font-bold text-rose-400">✕</span>
                     </div>
-                    <span className="text-stone-300 text-base leading-relaxed">{item.text}</span>
+                    <span className="text-stone-300 text-sm sm:text-base leading-relaxed">{item.text}</span>
                   </div>
                 ))}
               </div>
@@ -112,10 +112,10 @@ export const ProblemSolution: React.FC = () => {
                     }`}
                     style={{ transitionDelay: `${isVisible ? idx * 100 + 200 : 0}ms` }}
                   >
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center mt-1">
-                      <span className="text-lg font-bold text-emerald-400">{item.icon}</span>
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center mt-0.5">
+                      <span className="text-base font-bold text-emerald-400">✓</span>
                     </div>
-                    <span className="text-stone-300 text-base leading-relaxed">{item.text}</span>
+                    <span className="text-stone-300 text-sm sm:text-base leading-relaxed">{item.text}</span>
                   </div>
                 ))}
               </div>

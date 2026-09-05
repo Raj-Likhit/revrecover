@@ -93,11 +93,11 @@ export const ResultPanel: React.FC<ResultPanelProps> = ({ result, onClose }) => 
 
   const getDecisionEmoji = (scenario: string) => {
     const emojis: Record<string, string> = {
-      soft_decline: '💧',
-      hard_decline: '🔴',
-      afa_required: '🔐',
-      halted: '⏸️',
-      unknown: '❓',
+      soft_decline: '⏳',
+      hard_decline: '⚡',
+      afa_required: '🔑',
+      halted: '🤝',
+      unknown: '🔍',
     };
     return emojis[scenario] || '❓';
   };

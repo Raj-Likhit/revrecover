@@ -109,25 +109,25 @@ export const MetricsStatement: React.FC = () => {
           </div>
 
           {/* Explanation */}
-          <div className={`bg-gradient-to-r from-amber-950/30 to-transparent border border-amber-500/20 rounded-lg p-6 transform transition-all duration-500 delay-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-            <p className="text-amber-300">
+          <div className={`bg-gradient-to-r from-amber-950/40 to-transparent border border-amber-500/20 rounded-lg p-6 sm:p-8 transform transition-all duration-500 delay-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+            <p className="text-amber-300 text-sm sm:text-base">
               <span className="font-bold">This is not marketing.</span> The 26.6% is the net lift after removing all attribution bias. We held back 20% of eligible cases and measured the difference.
             </p>
           </div>
 
           {/* Breakdown */}
-          <div className={`grid grid-cols-1 sm:grid-cols-3 gap-4 pt-8 transform transition-all duration-500 delay-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-            <div className="p-6 rounded-lg border border-stone-700/50 bg-stone-900/40">
-              <p className="text-4xl font-bold text-cyan-400">₹226,394</p>
-              <p className="text-xs text-stone-500 uppercase tracking-wider mt-2">Total Revenue Recovered</p>
+          <div className={`grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 pt-8 transform transition-all duration-500 delay-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+            <div className="p-6 sm:p-8 rounded-lg border border-stone-700/50 bg-stone-900/40 hover:bg-stone-900/60 transition-colors">
+              <p className="text-3xl sm:text-4xl font-bold text-cyan-400">₹226K</p>
+              <p className="text-xs sm:text-sm text-stone-500 uppercase tracking-wider mt-3 font-medium">Revenue Recovered</p>
             </div>
-            <div className="p-6 rounded-lg border border-stone-700/50 bg-stone-900/40">
-              <p className="text-4xl font-bold text-emerald-400">44.4%</p>
-              <p className="text-xs text-stone-500 uppercase tracking-wider mt-2">Treatment Conversion</p>
+            <div className="p-6 sm:p-8 rounded-lg border border-stone-700/50 bg-stone-900/40 hover:bg-stone-900/60 transition-colors">
+              <p className="text-3xl sm:text-4xl font-bold text-emerald-400">44.4%</p>
+              <p className="text-xs sm:text-sm text-stone-500 uppercase tracking-wider mt-3 font-medium">Conversion Rate</p>
             </div>
-            <div className="p-6 rounded-lg border border-stone-700/50 bg-stone-900/40">
-              <p className="text-4xl font-bold text-amber-400">35×</p>
-              <p className="text-xs text-stone-500 uppercase tracking-wider mt-2">ROI per Action</p>
+            <div className="p-6 sm:p-8 rounded-lg border border-stone-700/50 bg-stone-900/40 hover:bg-stone-900/60 transition-colors">
+              <p className="text-3xl sm:text-4xl font-bold text-amber-400">35×</p>
+              <p className="text-xs sm:text-sm text-stone-500 uppercase tracking-wider mt-3 font-medium">ROI per Action</p>
             </div>
           </div>
         </div>
