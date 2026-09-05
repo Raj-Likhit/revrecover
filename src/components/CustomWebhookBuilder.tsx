@@ -14,7 +14,7 @@ import { motion } from 'motion/react';
 import { AuditLogEntry, ReasonBucket, ArmType } from '../types/revrecover.js';
 
 interface CustomWebhookBuilderProps {
-  onProcessWebhook: (payload: any) => Promise<AuditLogEntry | null>;
+  onProcessWebhook: (payload: Record<string, unknown>) => Promise<AuditLogEntry | null>;
   onInspectCase: (audit: AuditLogEntry) => void;
 }
 
@@ -39,9 +39,9 @@ export const CustomWebhookBuilder: React.FC<CustomWebhookBuilderProps> = ({
   const handleSend = async () => {
     setIsLoading(true);
     try {
-      let payload: any;
+      let payload: Record<string, unknown>;
       if (isRawJsonMode) {
-        payload = JSON.parse(customJson);
+        payload = JSON.parse(customJson) as Record<string, unknown>;
       } else {
         const errorReasonMap: Record<ReasonBucket, string> = {
           insufficient_funds: 'insufficient_funds',

@@ -2,11 +2,11 @@
 
 **Smart Triage Payment Recovery System**
 
-RevRecover uses AI-driven smart triage to achieve **26.6% proven lift** in payment recovery through strategic restraint, control group validation, and compliance-first design.
+RevRecover uses AI-driven smart triage to demonstrate **26.6% lift** in a controlled simulation through strategic restraint, control group validation, and compliance-first design.
 
 ## Key Features
 
-- **26.6% Proven Lift** - Validated through control group A/B testing (z=2.59, p=0.0096)
+- **26.6% Simulated Lift** - Validated through control group A/B testing in simulation (z=2.59, p=0.0096)
 - **6 Failure Types** - Differential strategies for card expired, insufficient funds, AFA, halted subscriptions, unknown declines, technical timeouts
 - **Strategic Restraint** - WAIT on soft declines (45% autopay baseline), ACT on hard declines (5% baseline)
 - **Compliance-First** - RBI AFA thresholds, DLT templates, quiet hours, opt-out tracking
@@ -85,7 +85,7 @@ From simulated evaluation (seed 20260825, median of 10 runs):
 |---|---|
 | Treatment Recovery Rate | 44.4% (52/117 cases) |
 | Control Recovery Rate | 17.9% (5/28 cases) |
-| **Proven Lift** | **+26.6 percentage points** |
+| **Simulated Lift** | **+26.6 percentage points** |
 | Net Attributable Recovery | ₹226,394 |
 | Statistical Significance | z=2.59, p=0.0096 |
 | Average ROI | ~37× (17-92× by failure type) |

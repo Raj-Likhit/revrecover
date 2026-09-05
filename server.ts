@@ -12,6 +12,7 @@ import { createPaymentLink, getCardUpdateCheckoutUrl } from './providers/razorpa
 import { rankAndAllocate, budgetAllocationLabel } from './policy/budgetAllocator.js';
 import { saveExperimentRun } from './db/experimentRuns.js';
 import { logger } from './server/logger.js';
+import { validateWebhookEvent, validateNonEmptyString, ValidationError } from './server/validation.js';
 import { 
   DEFAULT_PORT, 
   SERVER_HOST, 
@@ -128,18 +129,18 @@ async function startServer() {
           return res.status(401).json({ status: 'error', message: 'Invalid Razorpay webhook signature' });
         }
       }
+
+      // Validate webhook structure
+      const { event_id, event_type, subscription_id } = validateWebhookEvent(req.body);
+      
       const payload = req.body;
       const razorpaySubscription = payload.payload?.subscription?.entity;
       const razorpayPayment = payload.payload?.payment?.entity;
-      const normalizedEventType = payload.event_type || payload.event;
-      const normalizedSubscriptionId = payload.subscription_id || razorpaySubscription?.id || razorpayPayment?.subscription_id;
-      if (!normalizedEventType || !normalizedSubscriptionId) {
-        return res.status(400).json({ status: 'error', message: 'Webhook must include an event and subscription identifier' });
-      }
+      
       const result = await globalEngine.processWebhook({
-        event_id: payload.event_id || payload.id || `evt_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-        event_type: normalizedEventType,
-        subscription_id: normalizedSubscriptionId,
+        event_id,
+        event_type: event_type as 'subscription.pending' | 'subscription.halted' | 'subscription.charged' | 'payment.failed' | 'payment.captured',
+        subscription_id,
         customer_name: payload.customer_name || razorpayPayment?.notes?.customer_name || 'Live Test Customer',
         customer_phone_masked: payload.customer_phone_masked || '+91 98765****0000',
         customer_email_masked: payload.customer_email_masked || 'test***@domain.in',
@@ -158,6 +159,9 @@ async function startServer() {
 
       res.json({ status: 'success', ...result });
     } catch (err) {
+      if (err instanceof ValidationError) {
+        return res.status(400).json({ status: 'error', message: err.message, field: err.field });
+      }
       logger.error('Webhook processing error', err, { 
         event_type: req.body.event_type,
         subscription_id: req.body.subscription_id 
@@ -171,6 +175,10 @@ async function startServer() {
   app.post('/api/trigger/event', async (req, res) => {
     const { scenario } = req.body;
     try {
+      if (!scenario || typeof scenario !== 'string') {
+        return res.status(400).json({ status: 'error', message: 'scenario is required and must be a string' });
+      }
+      
       const ts = globalEngine.mockedClockTime;
       const subId = `sub_live_${Date.now().toString().slice(-6)}`;
 
@@ -385,8 +393,11 @@ async function startServer() {
 
   // 7. Human Review Approval
   app.post('/api/case/action', async (req, res) => {
-    const { subscription_id, action } = req.body;
-    const subCase = globalEngine.cases.get(subscription_id);
+    try {
+      const subscription_id = validateNonEmptyString(req.body.subscription_id, 'subscription_id');
+      const action = validateNonEmptyString(req.body.action, 'action');
+      
+      const subCase = globalEngine.cases.get(subscription_id);
     if (!subCase) {
       return res.status(404).json({ status: 'error', message: 'Case not found' });
     }
@@ -427,6 +438,14 @@ async function startServer() {
     }
 
     res.json({ status: 'ok', subCase });
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        return res.status(400).json({ status: 'error', message: err.message, field: err.field });
+      }
+      logger.error('Case action error', err, { subscription_id: req.body.subscription_id, action: req.body.action });
+      const message = err instanceof Error ? err.message : 'Unknown error occurred';
+      res.status(500).json({ status: 'error', message });
+    }
   });
 
   // 8. Automated Acceptance Criteria Test Suite (§16 Pre-demo verification gate)

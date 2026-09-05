@@ -96,7 +96,7 @@ export const ExecutiveLiftCharts: React.FC<ExecutiveLiftChartsProps> = ({
               <YAxis stroke="#78716c" fontSize={10} tickLine={false} tickFormatter={(val) => `${val}%`} domain={[0, 70]} />
               <Tooltip 
                 contentStyle={{ backgroundColor: '#0c0a09', borderColor: '#292524', borderRadius: '12px', fontSize: '11px', color: '#e7e5e4' }}
-                formatter={(value: any, name: any) => [`${value}%`, name === 'treatment' ? 'Treatment Arm' : 'Control Arm']}
+                formatter={(value: number | string, name: string) => [`${value}%`, name === 'treatment' ? 'Treatment Arm' : 'Control Arm']}
               />
               <Area type="monotone" dataKey="treatment" stroke="#f59e0b" strokeWidth={2.5} fillOpacity={1} fill="url(#treatmentGrad)" name="treatment" />
               <Area type="monotone" dataKey="control" stroke="#78716c" strokeWidth={2} strokeDasharray="4 4" fillOpacity={1} fill="url(#controlGrad)" name="control" />
@@ -145,7 +145,7 @@ export const ExecutiveLiftCharts: React.FC<ExecutiveLiftChartsProps> = ({
               <YAxis stroke="#78716c" fontSize={10} tickLine={false} tickFormatter={(val) => `${val}%`} domain={[0, 80]} />
               <Tooltip 
                 contentStyle={{ backgroundColor: '#0c0a09', borderColor: '#292524', borderRadius: '12px', fontSize: '11px', color: '#e7e5e4' }}
-                formatter={(value: any, name: any) => [`${value}%`, name === 'treated' ? 'Agent Recovery' : 'Organic Baseline']}
+                formatter={(value: number | string, name: string) => [`${value}%`, name === 'treated' ? 'Agent Recovery' : 'Organic Baseline']}
               />
               <Bar dataKey="base" fill="#44403c" name="base" radius={[4, 4, 0, 0]} />
               <Bar dataKey="treated" fill="#06b6d4" name="treated" radius={[4, 4, 0, 0]} />
