@@ -10,26 +10,11 @@ RevRecover is a production-ready payment failure recovery platform that uses int
 
 ---
 
-## Table of Contents
-
-- [System Overview](#system-overview)
-- [Quick Start](#quick-start)
-- [Core Architecture](#core-architecture)
-- [Key Features](#key-features)
-- [Performance Metrics](#performance-metrics)
-- [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
-- [Configuration](#configuration)
-- [Testing](#testing)
-- [Compliance](#compliance)
-
----
-
 ## System Overview
 
 RevRecover addresses the critical problem of failed subscription payments by intelligently triaging failures into distinct categories and applying evidence-based recovery strategies. Unlike traditional "spray-and-pray" approaches, the system shows strategic restraint where autopay succeeds organically and acts decisively where manual intervention creates measurable lift.
 
-### Decision Flow Diagram
+### Decision Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -72,7 +57,7 @@ RevRecover addresses the critical problem of failed subscription payments by int
       └──────────────────────────────────────────┘
 ```
 
-### Failure Classification System
+### Failure Classification
 
 ```
 Incoming Failure
@@ -99,60 +84,40 @@ Incoming Failure
 
 ### Prerequisites
 
-- Node.js 18+ (for server runtime)
-- npm or bun (package manager)
-- Razorpay test account (optional, for live testing)
-- Google Gemini API key (optional, for AI message drafting)
+- Node.js 18+
+- npm or bun
+- Razorpay test account (optional)
+- Google Gemini API key (optional)
 
 ### Installation
 
 ```bash
-# Clone repository
-git clone <repository-url>
-cd revrecover
-
 # Install dependencies
 npm install
 
 # Configure environment
 cp .env.example .env
 # Edit .env with your API keys
-```
 
-### Running the Application
-
-```bash
-# Development mode (hot reload)
+# Run development server
 npm run dev
-
-# Production build
-npm run build
-npm start
-
-# Type checking
-npm run lint
 ```
 
-The application starts at `http://localhost:3000`:
-- **Frontend**: React dashboard with live scenario triggers
-- **Backend**: Express API with webhook endpoints
-- **Database**: SQLite at `./data/revrecover.sqlite`
+Application starts at `http://localhost:3000`
 
 ### Demo Scenarios
 
-The home screen provides 5 one-click scenarios to demonstrate the recovery engine:
-
 | Scenario | Failure Type | System Response | Expected Lift |
 |----------|-------------|-----------------|---------------|
-| **Soft Decline** | Insufficient funds | WAIT for autopay | +17pp (45%→62%) |
-| **Hard Decline** | Card expired | SEND card update link | +25pp (5%→30%) |
-| **AFA Required** | Amount ≥ ₹15,000 | SEND OTP auth link | +30pp (15%→45%) |
-| **Subscription Halted** | T+3 retry exhausted | SEND payment link (empathy ladder) | +55pp (30%→85%) |
-| **Unknown Decline** | Ambiguous error code | ESCALATE to human review | +12pp (30%→42%) |
+| Soft Decline | Insufficient funds | WAIT for autopay | +17pp (45%→62%) |
+| Hard Decline | Card expired | SEND card update link | +25pp (5%→30%) |
+| AFA Required | Amount ≥ ₹15,000 | SEND OTP auth link | +30pp (15%→45%) |
+| Subscription Halted | T+3 retry exhausted | SEND payment link | +55pp (30%→85%) |
+| Unknown Decline | Ambiguous error | ESCALATE to human | +12pp (30%→42%) |
 
 ---
 
-## Core Architecture
+## Architecture
 
 ### System Components
 
@@ -179,100 +144,59 @@ The home screen provides 5 one-click scenarios to demonstrate the recovery engin
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-### Data Flow: Webhook → Recovery → Execution
+### Key Design Principles
 
-1. **Webhook Ingestion**: Razorpay sends `subscription.pending` event
-2. **Signature Verification**: HMAC SHA256 validation (security)
-3. **Idempotency Check**: Deduplicate by `event_id` (Layer 1)
-4. **Failure Diagnosis**: Classify into 6 reason buckets with confidence
-5. **Lift Calculation**: Fetch benchmark probabilities, compute net EV
-6. **Policy Decision**: Apply cost guardrail, contact limits, quiet hours
-7. **A/B Assignment**: Random 80/20 split (treatment vs control)
-8. **Action Reservation**: Write to DB with UNIQUE constraint (Layer 2 idempotency)
-9. **Execution**: Create Razorpay Payment Link or queue for quiet hours
-10. **Audit Logging**: Record full decision rationale with cost tracking
+**1. Idempotency Layers**
+- Layer 1: Webhook deduplication via `processedWebhooks` Set
+- Layer 2: Action-level via DB UNIQUE constraint on `(subscription_id, ladder_stage)`
+
+**2. Strategic Restraint**
+- Soft declines (insufficient funds): WAIT - autopay recovers 45% organically
+- Hard declines (card expired): ACT - autopay recovery ~0%
+
+**3. A/B Testing**
+- 80% treatment arm, 20% control arm
+- Statistical validation (z-test) on every batch
+- Net attributable recovery = Treatment - Control baseline
+
+**4. Compliance-First**
+- RBI AFA threshold enforcement (₹15,000)
+- Quiet hours (9 AM - 8 PM IST)
+- Opt-out suppression list
+- Tokenized PII handling
 
 ---
 
 ## Key Features
 
-- **26.6% Simulated Lift** - Validated through control group A/B testing in simulation (z=2.59, p=0.0096)
-- **6 Failure Types** - Differential strategies for card expired, insufficient funds, AFA, halted subscriptions, unknown declines, technical timeouts
-- **Strategic Restraint** - WAIT on soft declines (45% autopay baseline), ACT on hard declines (5% baseline)
-- **Compliance-First** - RBI AFA thresholds, DLT templates, quiet hours, opt-out tracking
-- **Cost Guardrails** - Budget allocation, cost-benefit prioritization, intervention caps
-- **Complete Audit Trail** - Every decision logged with full rationale and telemetry
+### Recovery Engine
+- **26.6% Simulated Lift** - Validated through control group A/B testing (z=2.59, p=0.0096)
+- **6 Failure Types** - Differential strategies for each bucket
+- **Cost Guardrails** - Only act when expected lift value > cost (5% cap)
+- **Budget Allocation** - Net-EV ranking with daily contact capacity
 
-## Tech Stack
+### Compliance & Safety
+- **RBI AFA Compliance** - ₹15,000 threshold enforcement for additional factor authentication
+- **Quiet Hours** - No outbound actions 8 PM - 9 AM IST
+- **DLT Templates** - WhatsApp/SMS template tracking
+- **Opt-Out Handling** - Suppression list with phone masking
+- **Grace Periods** - Configurable delays before escalation
 
-- **Backend**: TypeScript/Node.js with Express
-- **Frontend**: React 18 + Vite + Tailwind CSS
-- **Database**: SQLite with WAL mode for concurrency
-- **Deployment**: Serverless-ready architecture
+### Observability
+- **Complete Audit Trail** - Every decision logged with full rationale
+- **Structured Logging** - JSON logs with timestamps and context
+- **Cost Tracking** - Per-intervention cost calculation
+- **Benchmark Comparison** - p_base vs p_treated for each bucket
+- **Statistical Validation** - Z-score and p-value on batch runs
 
-## Quick Start
+---
 
-### Prerequisites
-- Node.js 18+
-- npm or bun
+## Performance Metrics
 
-### Setup
-
-```bash
-# Install dependencies
-npm install
-
-# Set environment variables
-cp .env.example .env
-# Edit .env with your Razorpay API key and Gemini API key
-
-# Run development server
-npm run dev
-```
-
-The app will start at `http://localhost:3000` with:
-- React frontend on port 5173
-- Express API on port 3000
-
-### Live Demo
-
-Click any of the 5 failure scenarios to trigger the recovery engine:
-
-1. **💧 Soft Decline** - Insufficient funds → System WAITS for autopay (25% lift with restraint)
-2. **🔴 Hard Decline** - Card expired → System SENDS card update link (25% lift immediate action)
-3. **🔐 AFA Required** - High value (₹18.5k+) → System SENDS OTP link (30% lift, 92× ROI)
-4. **⏸️ Subscription Halted** - Service offline → System deploys empathy ladder (55% lift, churn prevention)
-5. **❓ Unknown Decline** - Ambiguous error → System ESCALATES to human (18% lift, better CX)
-
-## Architecture
-
-```
-Payment Event
-    ↓
-Failure Type Classification (6 types)
-    ↓
-Smart Triage Policy Engine
-    ├─ Soft Decline → WAIT (let autopay retry free)
-    ├─ Hard Decline → ACT (send recovery link)
-    ├─ High Value → SEND OTP (RBI AFA compliant)
-    ├─ Halted → EMPATHY LADDER (churn prevention)
-    ├─ Unknown → ESCALATE (human review)
-    └─ Technical → WAIT (transient timeout)
-    ↓
-80/20 A/B Assignment
-    ├─ Treatment Arm (80%): Policy actions executed
-    └─ Control Arm (20%): Autopay only (baseline)
-    ↓
-Audit Log + Metrics Calculation
-    └─ True incremental lift = Treatment − Control
-```
-
-## Key Metrics
-
-From simulated evaluation (seed 20260825, median of 10 runs):
+### Simulated Results (seed: 20260825, n=145 cases)
 
 | Metric | Value |
-|---|---|
+|--------|-------|
 | Treatment Recovery Rate | 44.4% (52/117 cases) |
 | Control Recovery Rate | 17.9% (5/28 cases) |
 | **Simulated Lift** | **+26.6 percentage points** |
@@ -280,49 +204,97 @@ From simulated evaluation (seed 20260825, median of 10 runs):
 | Statistical Significance | z=2.59, p=0.0096 |
 | Average ROI | ~37× (17-92× by failure type) |
 
-## Compliance
+### System Performance
 
-- ✅ RBI AFA threshold compliance (₹15,000 rule)
-- ✅ DLT template tracking for WhatsApp/SMS
-- ✅ Quiet hours enforcement (9 PM - 9 AM IST)
-- ✅ Opt-out suppression list
-- ✅ Grace periods for halted subscriptions
-- ✅ Multi-stage escalation for ambiguous cases
+- **Cold start**: ~200ms
+- **Recovery decision**: <50ms
+- **Batch run (145 cases)**: ~2-3 seconds
+- **Concurrent requests**: WAL mode supports safe concurrent readers/writers
+
+---
+
+## Technology Stack
+
+**Backend**
+- TypeScript 5.8
+- Node.js 18+
+- Express.js
+- SQLite with WAL mode
+- Google Gemini AI (message drafting)
+
+**Frontend**
+- React 19
+- Vite 6
+- Tailwind CSS 4
+- Motion (animations)
+- Recharts (data visualization)
+
+**Infrastructure**
+- better-sqlite3 (database)
+- Razorpay API integration
+- Serverless-ready architecture
+
+---
 
 ## Project Structure
 
 ```
 revrecover/
-├── server.ts              # Main Express server & API routes
-├── server/                # Modular business logic
-│   ├── engine.ts         # Core triage policy engine
-│   ├── synthetic.ts      # Batch simulation generator
-│   ├── store.ts          # Audit log persistence
-│   └── ...
-├── db/                   # Database schema & operations
-│   ├── schema.sql        # SQLite schema
-│   └── ...
-├── policy/               # Policy & allocation logic
-│   ├── budgetAllocator.ts
-│   └── costStack.ts
-├── src/                  # React frontend
-│   ├── components/       # UI components
-│   └── types/           # TypeScript types
-├── data/                 # SQLite database
-└── package.json
+├── server.ts                 # Main Express server & API routes
+├── server/                   # Backend business logic
+│   ├── engine.ts            # Core recovery policy engine
+│   ├── constants.ts         # Configuration constants
+│   ├── logger.ts            # Structured logging
+│   ├── validation.ts        # Input validation
+│   ├── synthetic.ts         # Batch simulation
+│   ├── gemini.ts            # AI message drafting
+│   └── store.ts             # State persistence
+├── db/                      # Database layer
+│   ├── schema.sql          # SQLite schema
+│   ├── actionLedger.ts     # Action tracking (idempotency layer 2)
+│   ├── attribution.ts      # Revenue attribution
+│   └── experimentRuns.ts   # A/B test results
+├── policy/                  # Business rules
+│   ├── budgetAllocator.ts  # Net-EV ranking
+│   └── costStack.ts        # Cost calculation
+├── providers/               # External integrations
+│   └── razorpayProvider.ts # Payment gateway
+├── queue/                   # Background workers
+│   └── dispatchQueue.ts    # Quiet-hour scheduler
+├── src/                     # React frontend
+│   ├── App.tsx             # Main application
+│   ├── components/         # UI components
+│   └── types/              # TypeScript types
+└── data/                    # SQLite database files
 ```
 
-## Environment Variables
+---
 
-```env
+## Configuration
+
+All configuration values are centralized in `server/constants.ts`:
+
+```typescript
+DEFAULT_PORT = 3000
+QUIET_HOURS_START_HOUR = 9  // IST
+QUIET_HOURS_END_HOUR = 20   // IST
+DEFAULT_DAILY_CONTACT_CAPACITY = 80
+MAX_COST_PERCENTAGE = 0.05  // 5% of amount
+RAZORPAY_TIMEOUT_MS = 8000
+```
+
+### Environment Variables
+
+```bash
 # Database
 DATABASE_URL=./data/revrecover.sqlite
 
-# Razorpay (optional for production)
-RAZORPAY_KEY_ID=rzp_xxx
+# Razorpay (optional for production testing)
+RAZORPAY_KEY_ID=rzp_test_xxx
 RAZORPAY_KEY_SECRET=xxx
+RAZORPAY_WEBHOOK_SECRET=xxx
 
-# Gemini API (for LLM features)
+# Gemini API (optional for AI message drafting)
 GEMINI_API_KEY=xxx
 
 # Server
@@ -330,22 +302,73 @@ PORT=3000
 NODE_ENV=development
 ```
 
+---
+
 ## Testing
 
-Run the batch simulator to validate policy logic:
+### Run Batch Simulator
 
 ```bash
-npm run test
+npm run dev
+# Navigate to http://localhost:3000
+# Click "Batch Simulator" tab
+# Adjust seed and count, click "Run Batch"
 ```
 
-Or test specific scenarios via the web UI by clicking scenario buttons.
+### Run Acceptance Tests
 
-## Performance
+```bash
+curl http://localhost:3000/api/acceptance-tests
+```
 
-- **Cold start**: ~200ms
-- **Recovery decision**: <50ms
-- **Batch run (145 cases)**: ~2-3 seconds
-- **Concurrent requests**: WAL mode supports safe concurrent readers/writers
+### Manual Testing
+
+Click scenario buttons on home screen:
+1. Observe audit log entry
+2. Verify decision rationale
+3. Check compliance flags
+4. Validate cost calculation
+
+---
+
+## Compliance
+
+### Implemented Standards
+
+- **RBI Guidelines**: AFA threshold enforcement for amounts ≥ ₹15,000
+- **DPDP Act 2023**: Tokenized PII, minimal data sharing with LLM
+- **TRAI DLT**: Template registration tracking
+- **PCI-DSS**: No raw card data handling, hosted checkout only
+- **Opt-Out Rights**: Suppression list with immediate effect
+
+### Audit Trail
+
+Every decision includes:
+- Timestamp and event ID
+- Failure classification with confidence
+- Policy decision with rationale
+- Cost breakdown (decision + settlement)
+- Compliance checks passed
+- A/B arm assignment
+- Net EV calculation
+
+---
+
+## Production Deployment
+
+### Current Design (Demo/POC)
+- In-memory state with disk persistence
+- Single-process queue worker
+- SQLite with WAL mode
+
+### Production Path
+- **State**: Redis or PostgreSQL instead of in-memory Map
+- **Queue**: SQS/RabbitMQ instead of setInterval
+- **Database**: PostgreSQL for multi-instance deployments
+- **Observability**: Export logs to Datadog/CloudWatch
+- **Security**: Add rate limiting, authentication, HTTPS enforcement
+
+---
 
 ## Philosophy
 
@@ -363,6 +386,8 @@ We do:
 - Act decisively where automation fails
 - Validate every lift claim with control groups
 
+---
+
 ## Next Steps
 
 1. **Validate on Live Data** - Deploy to real payment failures
@@ -371,18 +396,23 @@ We do:
 4. **LLM Integration** - Replace deterministic rules with safe LLM diagnosis layer
 5. **Multi-Region** - Adapt quiet hours, compliance rules per region
 
+---
+
 ## Contributing
 
-This is a Buildathon 2026 submission. Contributions welcome via PRs.
+This is a Buildathon 2026 submission. For questions or collaboration:
+
+- Review [Architecture Documentation](./ARCHITECTURE.md)
+- Check inline code comments
+- Run acceptance test suite
+
+---
 
 ## License
 
 MIT
 
-## Contact
-
-Questions? Check the inline code comments and architecture documentation.
-
 ---
 
-**Status**: Presentation-ready. Production deployment requires benchmarks validation on real customer data.
+**Built for**: Razorpay Buildathon 2026  
+**Status**: Presentation-ready. Production deployment requires benchmark validation on real customer data.
