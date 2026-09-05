@@ -91,17 +91,6 @@ export const ResultPanel: React.FC<ResultPanelProps> = ({ result, onClose }) => 
     return names[scenario] || scenario;
   };
 
-  const getDecisionEmoji = (scenario: string) => {
-    const emojis: Record<string, string> = {
-      soft_decline: '⏳',
-      hard_decline: '⚡',
-      afa_required: '🔑',
-      halted: '🤝',
-      unknown: '🔍',
-    };
-    return emojis[scenario] || '❓';
-  };
-
   const getDecisionAction = (scenario: string) => {
     const actions: Record<string, string> = {
       soft_decline: 'WAIT for card update',
@@ -143,7 +132,13 @@ export const ResultPanel: React.FC<ResultPanelProps> = ({ result, onClose }) => 
         <div className="p-8 sm:p-12 max-h-[80vh] overflow-y-auto">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
-            <div className="text-5xl">{getDecisionEmoji(scenarioType)}</div>
+            <div 
+              className="w-12 h-12 sm:w-16 sm:h-16 rounded-full flex-shrink-0"
+              style={{
+                background: `linear-gradient(135deg, ${colors.glow}, ${colors.glow}20)`,
+                border: `2px solid ${colors.text}`,
+              }}
+            />
             <div>
               <h2 className={`text-3xl sm:text-4xl font-bold ${colors.text}`}>
                 {getScenarioName(scenarioType)}

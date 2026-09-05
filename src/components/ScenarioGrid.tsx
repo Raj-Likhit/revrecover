@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 interface Scenario {
   id: string;
   name: string;
-  emoji: string;
   label: string;
   color: string;
   description: string;
@@ -14,7 +13,6 @@ const SCENARIOS: Scenario[] = [
   {
     id: 'soft_decline',
     name: 'Soft Decline',
-    emoji: '⏳',
     label: 'System WAITS',
     color: '#06B6D4',
     description: 'Card declined, but likely temporary. Wait for card update.',
@@ -23,7 +21,6 @@ const SCENARIOS: Scenario[] = [
   {
     id: 'hard_decline',
     name: 'Hard Decline',
-    emoji: '⚡',
     label: 'System ACTS',
     color: '#F43F5E',
     description: 'Card lost/stolen. Send immediate card update.',
@@ -32,7 +29,6 @@ const SCENARIOS: Scenario[] = [
   {
     id: 'afa_required',
     name: 'AFA Required',
-    emoji: '🔑',
     label: 'System SENDS OTP',
     color: '#A855F7',
     description: 'Customer needs to authenticate. Send OTP flow.',
@@ -41,7 +37,6 @@ const SCENARIOS: Scenario[] = [
   {
     id: 'halted',
     name: 'Halted',
-    emoji: '🤝',
     label: 'System EMPATHIZES',
     color: '#F59E0B',
     description: 'Multiple declines. Customer likely stressed. Wait.',
@@ -50,7 +45,6 @@ const SCENARIOS: Scenario[] = [
   {
     id: 'unknown',
     name: 'Unknown Decline',
-    emoji: '🔍',
     label: 'System ESCALATES',
     color: '#6B7280',
     description: 'Unusual decline reason. Route to human review.',
@@ -185,7 +179,13 @@ export const ScenarioGrid: React.FC<ScenarioGridProps> = ({ onScenarioClick, isL
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-8">
             {SCENARIOS.map((scenario) => (
               <div key={scenario.id} className="text-center group">
-                <div className="text-4xl mb-3 transition-transform duration-300 group-hover:scale-125">{scenario.emoji}</div>
+                <div 
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mb-3 mx-auto transition-all duration-300 group-hover:scale-125"
+                  style={{
+                    background: `linear-gradient(135deg, ${scenario.color}40, ${scenario.color}20)`,
+                    border: `2px solid ${scenario.color}60`,
+                  }}
+                />
                 <p className="font-bold text-stone-300 text-sm">{scenario.name}</p>
                 <p className={`text-xs mt-2 transition-colors duration-300`} style={{ color: scenario.color }}>
                   {scenario.label}
@@ -244,12 +244,7 @@ const HexagonCard: React.FC<HexagonCardProps> = ({ scenario, isVisible, isActive
         }}
       >
         {/* Inner content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-          {/* Icon with better styling */}
-          <div className="text-5xl sm:text-6xl mb-4 drop-shadow-lg transition-transform duration-300" style={{ transform: isHovered ? 'scale(1.15)' : 'scale(1)' }}>
-            {scenario.emoji}
-          </div>
-
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
           {/* Loading spinner */}
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center">
@@ -259,7 +254,7 @@ const HexagonCard: React.FC<HexagonCardProps> = ({ scenario, isVisible, isActive
 
           {/* Description on hover */}
           {isHovered && !isLoading && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
               <p className="text-xs sm:text-sm font-medium text-stone-100 leading-tight">{scenario.description}</p>
             </div>
           )}
@@ -267,6 +262,10 @@ const HexagonCard: React.FC<HexagonCardProps> = ({ scenario, isVisible, isActive
           {/* Label normally */}
           {!isHovered && !isLoading && (
             <>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mb-3" style={{
+                background: `linear-gradient(135deg, ${scenario.color}40, ${scenario.color}20)`,
+                border: `2px solid ${scenario.color}60`,
+              }} />
               <p className="text-sm sm:text-base font-bold text-stone-100 text-center leading-tight">{scenario.name}</p>
               <p className="text-xs text-stone-400 mt-2 text-center">{scenario.label}</p>
             </>
